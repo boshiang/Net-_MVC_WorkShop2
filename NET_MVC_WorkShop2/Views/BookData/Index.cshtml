@@ -1,0 +1,200 @@
+﻿@model NET_MVC_WorkShop2.Models.BookSearch
+
+@{
+    ViewBag.Title = "查詢書籍";
+}
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <h2>查詢書籍</h2>
+    @using (Html.BeginForm("Index", "BookData", FormMethod.Post, new { id = "Form1" }))
+    {
+    <div class="form-horizontal">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Book_Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Book_Name, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Book_Class_Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Book_Class_Name, new { @class = "form-control", id = "Book_Class_Name", style = "width: 30%;" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Book_Keeper, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Book_Keeper, new { @class = "form-control", id = "Book_Keeper", style = "width: 30%;" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Book_Status, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Book_Status, new { @class = "form-control", id = "Book_Status", style = "width: 30%;" })
+            </div>
+        </div>
+
+
+
+
+        <div class="form-group">
+            <div class="col-md-2"></div>
+            <div class="col-md-10">
+                @*<input type="button" value="查詢" class="btn btn-default" onclick="javascript:window.location='@Url.Action("Search", "BookData")'" />*@
+                <input type="submit" value="查詢" id="submit" class="btn btn-default" />
+                <input type="reset" value="清除" class="btn btn-default" />
+                <input type="button" value="新增" class="btn btn-default" id="insert"/>
+                @*@Html.ActionLink("新增員工", "InsertEmployee")
+        @Html.ActionLink("清除", "Index")*@
+            </div>
+        </div>
+    </div>
+        <div id="book_grid"></div>
+    }
+    <script>
+        $(document).ready(function () {
+            //取得書籍資料
+            $.ajax({
+                type: "Post",
+                url: "/BookData/Search",
+                dataType: "json",
+                success: function (response) {
+                    GridData(response);
+                }, error: function (error) {
+                    alert("系統發生錯誤");
+                }
+            });
+
+            ///查詢
+            $('#submit').click(function () {
+                $.ajax({
+                    type: "Post",
+                    url: "/BookData/Search",
+                    data: $('#Form1').serialize(),
+                    dataType: "json",
+                    success: function (response) {
+                        $("#book_grid").data("kendoGrid")
+                            .dataSource
+                            .data(response);
+                    }, error: function (error) {
+                        alert("系統發生錯誤");
+                    }
+                });
+                return false;
+            });
+
+            $('#insert').click(function () {
+                alert('新增書籍');
+            });
+            $("#Book_Class_Name").kendoDropDownList({
+                dataTextField: "Book_Class_Name",
+                dataValueField: "Book_Class_Name",
+                optionLabel: "請選擇...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            url: "/BookData/GetBook_Class_Name",
+                        }
+                    }
+                }
+            });
+            $("#Book_Status").kendoDropDownList({
+                dataTextField: "Book_Status",
+                dataValueField: "Book_Status",
+                optionLabel: "請選擇...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            url: "/BookData/GetBook_Status",
+                        }
+                    }
+                }
+            });
+            $("#Book_Keeper").kendoDropDownList({
+                dataTextField: "Book_Keeper",
+                dataValueField: "Book_Keeper",
+                optionLabel: "請選擇...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            url: "/BookData/GetBook_Keeper",
+                        }
+                    }
+                }
+            });
+            //Grid
+            function GridData(dataSource) {
+                $("#book_grid").kendoGrid({
+                    dataSource: {
+                        data: dataSource,
+                        pageSize: 20,
+                    },
+                    pageable: true,
+                    sortable: true,
+                    columns: [
+                        {
+                            field: "Book_Class_Name",
+                            title: "書籍分類",
+                            width: 80
+                        }, {
+                            field: "Book_Name",
+                            title: "書名",
+                            width: 200
+                        }, {
+                            field: "Book_BoughtDate",
+                            title: "購書日期",
+                            format: "{0: yyyy-MM-dd}",
+                            width: 150
+                        }, {
+                            field: "Book_Status",
+                            title: "書籍狀態",
+                            width: 100
+                        }, {
+                            field: "Book_Keeper",
+                            title: "借閱人",
+                            width: 100
+                        }]
+                });
+            };
+            //var data = [
+            //    { text: "Black", value: "1" },
+            //    { text: "Orange", value: "2" },
+            //    { text: "Grey", value: "3" }
+            //];
+
+            //// create DropDownList from input HTML element
+            //$("#color").kendoDropDownList({
+            //    dataTextField: "text",
+            //    dataValueField: "value",
+            //    optionLabel: "請選擇...",
+            //    dataSource: data
+            //});
+            @*var grid_data = "@ViewBag.data";
+            if (grid_data == "123") {
+                var dataSource = new kendo.data.DataSource({
+                    transport: {
+                        read: {
+                            url: "/BookData/Search",
+                            dataType: "json"
+                        }
+                    },
+                    pageSize: 10
+                });
+                GridData(dataSource);
+            } else {
+                GridData(grid_data);
+            };*@
+        });
+
+    </script>
+</body>
+</html>
