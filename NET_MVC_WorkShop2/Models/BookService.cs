@@ -27,7 +27,7 @@ namespace NET_MVC_WorkShop2.Models
         public List<Models.BookData> GetBookByCondtioin(Models.BookSearch arg)
         {
             DataTable dt = new DataTable();
-            string sql = @"SELECT BOOK_CLASS_NAME ,BOOK_NAME ,BOOK_BOUGHT_DATE ,CODE_NAME ,USER_ENAME
+            string sql = @"SELECT BOOK_ID, BOOK_CLASS_NAME ,BOOK_NAME ,BOOK_BOUGHT_DATE ,CODE_NAME ,USER_ENAME
                            FROM [dbo].[BOOK_DATA] as da
                            left join [dbo].[BOOK_CLASS] as cl
                            on da.BOOK_CLASS_ID = cl.BOOK_CLASS_ID
@@ -36,6 +36,7 @@ namespace NET_MVC_WorkShop2.Models
                            left join [dbo].[MEMBER_M] as m
                            on da.BOOK_KEEPER = m.USER_ID
                            Where (da.BOOK_STATUS = co.CODE_ID) AND
+                                 (da.BOOK_ID = @Book_ID OR @Book_ID='') AND
                                  (BOOK_NAME LIKE ('%' + @Book_Name + '%')or @Book_Name='') AND
                                  (UPPER(BOOK_CLASS_NAME) LIKE UPPER('%' + @Book_Class_Name + '%')or @Book_Class_Name='') AND
                                  (CODE_NAME LIKE ('%' + @Book_Status + '%')or @Book_Status='') AND
@@ -46,6 +47,7 @@ namespace NET_MVC_WorkShop2.Models
             {
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.Add(new SqlParameter("@Book_ID", arg.Book_ID == null ? string.Empty : arg.Book_ID));
                 cmd.Parameters.Add(new SqlParameter("@Book_Name", arg.Book_Name == null ? string.Empty : arg.Book_Name));
                 cmd.Parameters.Add(new SqlParameter("@Book_Class_Name", arg.Book_Class_Name == null ? string.Empty : arg.Book_Class_Name));
                 cmd.Parameters.Add(new SqlParameter("@Book_Status", arg.Book_Status == null ? string.Empty : arg.Book_Status));
@@ -55,6 +57,90 @@ namespace NET_MVC_WorkShop2.Models
                 conn.Close();
             }
             return this.MapBookDataToList(dt);
+        }
+        /// <summary>
+        /// 新增書籍
+        /// </summary>
+        /// <param name="book"></param>
+        /// <returns>書籍編號</returns>
+        public int InsertBook(Models.BookData book)
+        {
+            string sql = @" INSERT INTO [dbo].[BOOK_DATA]
+                         (
+        	                 BOOK_NAME, BOOK_AUTHOR, BOOK_PUBLISHER, BOOK_NOTE, BOOK_BOUGHT_DATE, BOOK_CLASS_ID , BOOK_STATUS, BOOK_KEEPER
+                         )
+                        VALUES
+                        (
+        	                 @Book_Name,@Book_Author, @Book_Publisher, @Book_Note, @Book_BoughtDate, @Book_Class_ID , @Book_Status, @Book_Keeper
+                        )
+                        Select SCOPE_IDENTITY()";
+            int BookId;
+            using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.Add(new SqlParameter("@Book_Name", book.Book_Name));
+                cmd.Parameters.Add(new SqlParameter("@Book_Author", book.Book_Author));
+                cmd.Parameters.Add(new SqlParameter("@Book_Publisher", book.Book_Publisher));
+                cmd.Parameters.Add(new SqlParameter("@Book_Note", book.Book_Note));
+                cmd.Parameters.Add(new SqlParameter("@Book_BoughtDate", book.Book_BoughtDate));
+                cmd.Parameters.Add(new SqlParameter("@Book_Class_ID", book.Book_Class_ID));
+                cmd.Parameters.Add(new SqlParameter("@Book_Status", book.Book_Status));
+                cmd.Parameters.Add(new SqlParameter("@Book_Keeper", book.Book_Keeper));
+                BookId = Convert.ToInt32(cmd.ExecuteScalar());
+                conn.Close();
+            }
+            return BookId;
+        }
+
+        /// <summary>
+        /// 刪除書籍
+        /// </summary>
+        
+        public int DeleteBookById(string BookId)
+        {
+
+            string sql = "Delete FROM [dbo].[BOOK_DATA] Where Book_ID=@Book_ID";
+            int BookID;
+            using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.Add(new SqlParameter("@Book_ID", BookId));
+                BookID = (int)(cmd.ExecuteNonQuery());
+                conn.Close();
+            }
+            return BookID;
+        }
+
+        /// <summary>
+        /// Book_Class_ID下拉選單
+        /// </summary>
+        /// <returns></returns>
+        public List<Models.BookData> GetBook_Class_ID()
+        {
+            DataTable dt = new DataTable();
+            string sql = @"SELECT Book_Class_ID
+                           FROM [dbo].[BOOK_CLASS] as cl";
+
+
+            using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                SqlDataAdapter sqlAdapter = new SqlDataAdapter(cmd);
+                sqlAdapter.Fill(dt);
+                conn.Close();
+            }
+            List<Models.BookData> result = new List<BookData>();
+            foreach (DataRow row in dt.Rows)
+            {
+                result.Add(new BookData()
+                {
+                    Book_Class_ID = row["Book_Class_ID"].ToString()
+                });
+            }
+            return result;
         }
 
         /// <summary>
@@ -145,6 +231,8 @@ namespace NET_MVC_WorkShop2.Models
             return result;
         }
 
+        
+
         /// <summary>
         /// Map資料進List
         /// </summary>
@@ -158,9 +246,10 @@ namespace NET_MVC_WorkShop2.Models
             {
                 result.Add(new BookData()
                 {
+                    Book_ID = row["Book_ID"].ToString(),
                     Book_Class_Name = row["BOOK_CLASS_NAME"].ToString(),
                     Book_Name = row["BOOK_NAME"].ToString(),
-                    Book_BoughtDate = row["BOOK_BOUGHT_DATE"].ToString(),
+                    Book_BoughtDate = Convert.ToDateTime(row["BOOK_BOUGHT_DATE"]).ToString("yyyy/MM/dd"),
                     Book_Status = row["CODE_NAME"].ToString(),
                     Book_Keeper = row["USER_ENAME"].ToString()
                 });

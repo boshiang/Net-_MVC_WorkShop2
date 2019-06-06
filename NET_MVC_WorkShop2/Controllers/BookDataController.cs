@@ -19,8 +19,33 @@ namespace NET_MVC_WorkShop2.Controllers
         public ActionResult Index()
         {
             ViewBag.book = this.codeService.GetBook();
-            ViewBag.data = "123";
             return View();
+        }
+
+        /// <summary>
+        /// 書籍資料新增
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost()]
+        public JsonResult Insert(Models.BookData book)
+        {
+            Models.BookService BookService = new Models.BookService();
+            var result = BookService.InsertBook(book);
+            TempData["message"] = "存檔成功";
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// 書籍資料刪除
+        /// </summary>
+        /// <param name="BookId"></param>
+        /// <returns></returns>
+        [HttpPost()]
+        public JsonResult Delete(string BookId)
+        {
+            Models.BookService BookService = new Models.BookService();
+            var result = BookService.DeleteBookById(BookId);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -28,24 +53,28 @@ namespace NET_MVC_WorkShop2.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost()]
-        public JsonResult Index(Models.BookSearch arg)
-        {
-            Models.BookService BookService = new Models.BookService();
-            ViewBag.SearchResult = BookService.GetBookByCondtioin(arg);
-            var result = BookService.GetBookByCondtioin(arg);
-            //return Json(result);
-            return Json(result);
-        }
-
-        [HttpPost()]
         public JsonResult Search(Models.BookSearch arg)
         {
             Models.BookService BookService = new Models.BookService();
-            //ViewBag.SearchResult = BookService.GetBookByCondtioin(arg);
             var result = BookService.GetBookByCondtioin(arg);
             return Json(result,JsonRequestBehavior.AllowGet);
         }
+        /// <summary>
+        /// Book_Class_ID下拉選單
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet()]
+        public JsonResult GetBook_Class_ID()
+        {
+            Models.BookService BookService = new Models.BookService();
+            var result = BookService.GetBook_Class_ID();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
 
+        /// <summary>
+        /// GetBook_Class_Name下拉選單
+        /// </summary>
+        /// <returns></returns>
         [HttpGet()]
         public JsonResult GetBook_Class_Name()
         {
@@ -53,6 +82,10 @@ namespace NET_MVC_WorkShop2.Controllers
             var result = BookService.GetBook_Class_Name();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+        /// <summary>
+        /// GetBook_Status下拉選單
+        /// </summary>
+        /// <returns></returns>
         [HttpGet()]
         public JsonResult GetBook_Status()
         {
@@ -60,7 +93,10 @@ namespace NET_MVC_WorkShop2.Controllers
             var result = BookService.GetBook_Status();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-        
+        /// <summary>
+        /// GetBook_Keeper下拉選單
+        /// </summary>
+        /// <returns></returns>
         [HttpGet()]
         public JsonResult GetBook_Keeper()
         {

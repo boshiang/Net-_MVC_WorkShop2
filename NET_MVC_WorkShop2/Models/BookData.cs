@@ -9,7 +9,11 @@ namespace NET_MVC_WorkShop2.Models
 {
     public class BookData
     {
-        public int Book_ID { get; set; }
+        public string Book_ID { get; set; }
+
+        [DisplayName("書籍分類")]
+        [Required(ErrorMessage = "此欄位必填")]
+        public string Book_Class_ID { get; set; }
 
         [DisplayName("書名")]
         [Required(ErrorMessage = "此欄位必填")]
@@ -22,7 +26,8 @@ namespace NET_MVC_WorkShop2.Models
         [DisplayName("出版社")]
         [Required(ErrorMessage = "此欄位必填")]
         public string Book_Publisher { get; set; }
-        [DisplayName("內容描述")]
+
+        [DisplayName("內容簡介")]
         [Required(ErrorMessage = "此欄位必填")]
         public string Book_Note { get; set; }
 

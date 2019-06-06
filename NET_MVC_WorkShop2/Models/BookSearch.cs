@@ -9,6 +9,7 @@ namespace NET_MVC_WorkShop2.Models
 {
     public class BookSearch
     {
+        public string Book_ID { get; set; }
         [DisplayName("書名")]
         [Required(ErrorMessage = "此欄位必填")]
         public string Book_Name { get; set; }
