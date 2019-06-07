@@ -60,9 +60,12 @@
     <div class="form-group" id="window" style="display: none">
         <form id="insert_form">
             <ul class="fieldlist" style="list-style-type:none" id="ul_form">
+                <li style="display: none">
+                    @Html.TextBoxFor(model => model.Book_ID, new { @class = "form-control", id = "Book_ID_I", required = "required", validationmessage = "這是必填欄位" })
+                </li>
                 <li>
                     @Html.LabelFor(model => model.Book_Name, htmlAttributes: new { @class = "require", style = "text-align: left" })
-                    @Html.TextBoxFor(model => model.Book_Name, new { @class = "form-control", id = "Book_Name_I" , required = "required", validationmessage = "這是必填欄位" })
+                    @Html.TextBoxFor(model => model.Book_Name, new { @class = "form-control", id = "Book_Name_I", required = "required", validationmessage = "這是必填欄位" })
                 </li>
                 <li>
                     @Html.LabelFor(model => model.Book_Author, htmlAttributes: new { @class = "require", style = "text-align: left" })
@@ -90,7 +93,7 @@
                 </li>
                 <li name="hidden" id="hide2">
                     @Html.LabelFor(model => model.Book_Keeper, htmlAttributes: new { @class = "require", style = "text-align: left" })<br>
-                    @Html.TextBoxFor(model => model.Book_Keeper, new { @class = "form-control",id= "keeper_value", name = "Book_Keeper", required = "required", validationmessage = "這是必填欄位", style = "width:70%;padding-right: 3px;" })
+                    @Html.TextBoxFor(model => model.Book_Keeper, new { @class = "form-control", id = "keeper_value", name = "Book_Keeper", required = "required", validationmessage = "這是必填欄位", style = "width:70%;padding-right: 3px;" })
                 </li>
                 <li>
                     <input type="button" value="儲存新增" class="btn btn-primary" id="save_insert" style="display: none;" />
@@ -161,7 +164,11 @@
             
             //新增視窗
             $('#insert').click(function () {
-                //$('#insert_form').trigger("reset");
+                $('#insert_form').trigger("reset");
+                $("#Book_BoughtDate_I").kendoDatePicker({
+                    value: new Date(),
+                    format: "yyyy/MM/dd"
+                });
                 $("#hide1").hide();
                 $("#hide2").hide();
                 $("#save_insert").show();
@@ -181,10 +188,10 @@
             });
 
             //日期選擇
-            $("#Book_BoughtDate_I").kendoDatePicker({
-                value: new Date(),
-                format: "yyyy/MM/dd"
-            });
+            //$("#Book_BoughtDate_I").kendoDatePicker({
+            //    value: new Date(),
+            //    format: "yyyy/MM/dd"
+            //});
             //書籍類別選擇
             $("#Book_Class_Name , #Book_Class_Name_I").kendoDropDownList({
                 dataTextField: "Book_Class_Name",
@@ -231,6 +238,27 @@
             });
 
         });
+        //修改
+        $('#save_update').click(function () {
+            if ($('#keeper_value').val() == "") {
+                $('#keeper_value').val(" ");
+            }
+            $.ajax({
+                type: "Post",
+                url: "/BookData/Update",
+                data: $('#insert_form').serialize(),
+                dataType: "json",
+                success: function (response) {
+                    alert("更新成功");
+                    location.reload();
+                }, error: function (error) {
+                    alert("系統發生錯誤");
+                }
+            });
+            $("#window").data('kendoWindow').close();
+            return false;
+        });
+        //載入修改書籍資料
         function UpdateDetails(e) {
             $("#hide1").show();
             $("#hide2").show();
@@ -259,6 +287,7 @@
                 dataType: "json",
                 success: function (response) {
                     console.log(response)
+                    $('#Book_ID_I').val(response[0].Book_ID);
                     $('#Book_Name_I').val(response[0].Book_Name);
                     $('#Book_Author_I').val(response[0].Book_Author);
                     $('#Book_Publisher_I').val(response[0].Book_Publisher);
@@ -269,14 +298,18 @@
 
                     var BookStatus = $("#status_value").data("kendoDropDownList");
                     BookStatus.value(response[0].Book_Status);
-
+                    
                     var BookKeeper = $("#keeper_value").data("kendoDropDownList");
                     BookKeeper.value(response[0].Book_Keeper);
-
+                    //if (response[0].Book_Keeper == null) {
+                    //    BookKeeper.value(response[0].Book_Keeper) = " ";
+                    //}
+                    
                 }, error: function (error) {
                     alert("系統發生錯誤");
                 }
             });
+            return false;
             
         }
         //Grid
@@ -334,6 +367,7 @@
                     }]
             });
         };
+        //刪除
         function DeleteDetails(e) {
             var r = confirm("確認刪除?");
             if (r == true) {

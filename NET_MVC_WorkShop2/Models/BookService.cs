@@ -97,7 +97,6 @@ namespace NET_MVC_WorkShop2.Models
         /// <summary>
         /// 修改書籍
         /// </summary>
-        /// <param name="book"></param>
         /// <returns>書籍編號</returns>
         public int UpdateBook(Models.BookData book)
         {
@@ -105,7 +104,7 @@ namespace NET_MVC_WorkShop2.Models
                             SET BOOK_NAME = @Book_Name, BOOK_AUTHOR = @Book_Author, BOOK_PUBLISHER = @Book_Publisher, BOOK_NOTE = @Book_Note, 
                                 BOOK_BOUGHT_DATE = @Book_BoughtDate, BOOK_CLASS_ID = @Book_Class_ID, BOOK_STATUS = @Book_Status, BOOK_KEEPER = @Book_Keeper
                             WHERE BOOK_ID = @Book_ID";
-            int BookId;
+            int BookID;
             using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
             {
                 conn.Open();
@@ -119,10 +118,10 @@ namespace NET_MVC_WorkShop2.Models
                 cmd.Parameters.Add(new SqlParameter("@Book_Class_ID", book.Book_Class_ID));
                 cmd.Parameters.Add(new SqlParameter("@Book_Status", book.Book_Status));
                 cmd.Parameters.Add(new SqlParameter("@Book_Keeper", book.Book_Keeper));
-                BookId = (int)(cmd.ExecuteNonQuery());
+                BookID = (int)(cmd.ExecuteNonQuery());
                 conn.Close();
             }
-            return BookId;
+            return BookID;
         }
         /// <summary>
         /// 刪除書籍
@@ -150,7 +149,7 @@ namespace NET_MVC_WorkShop2.Models
         public List<Models.BookData> UpdateDetail(string BookId)
         {
             DataTable dt = new DataTable();
-            string sql = @"SELECT BOOK_NAME ,BOOK_AUTHOR , BOOK_PUBLISHER , BOOK_NOTE ,BOOK_BOUGHT_DATE , da.BOOK_CLASS_ID , CODE_ID ,USER_ID
+            string sql = @"SELECT BOOK_ID , BOOK_NAME ,BOOK_AUTHOR , BOOK_PUBLISHER , BOOK_NOTE ,BOOK_BOUGHT_DATE , da.BOOK_CLASS_ID , CODE_ID ,USER_ID
                            FROM [dbo].[BOOK_DATA] as da
 
                            left join [dbo].[BOOK_CLASS] as cl
@@ -305,7 +304,7 @@ namespace NET_MVC_WorkShop2.Models
             {
                 result.Add(new BookData()
                 {
-                    
+                    Book_ID = row["BOOK_ID"].ToString(),
                     Book_Name = row["BOOK_NAME"].ToString(),
                     Book_Author = row["BOOK_AUTHOR"].ToString(),
                     Book_Publisher = row["BOOK_PUBLISHER"].ToString(),

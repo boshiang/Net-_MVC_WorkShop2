@@ -40,15 +40,19 @@ namespace NET_MVC_WorkShop2.Models
         public string Book_Class_Name { get; set; }
 
         [DisplayName("借閱狀態")]
+        [Required(ErrorMessage = "此欄位必填")]
         public string Book_Status { get; set; }
 
         [DisplayName("書籍狀態")]
+        [Required(ErrorMessage = "此欄位必填")]
         public string Book_Status_Name { get; set; }
 
         [DisplayName("借閱人")]
+        [Required(ErrorMessage = "此欄位必填")]
         public string Book_Keeper { get; set; }
 
         [DisplayName("借閱人")]
+        [Required(ErrorMessage = "此欄位必填")]
         public string Book_Keeper_EName { get; set; }
     }
 }
