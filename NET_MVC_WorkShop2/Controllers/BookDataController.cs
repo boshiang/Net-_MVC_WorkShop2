@@ -36,6 +36,18 @@ namespace NET_MVC_WorkShop2.Controllers
         }
 
         /// <summary>
+        /// 書籍資料修改
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost()]
+        public JsonResult Update(Models.BookData book)
+        {
+            Models.BookService BookService = new Models.BookService();
+            var result = BookService.UpdateBook(book);
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
         /// 書籍資料刪除
         /// </summary>
         /// <param name="BookId"></param>
@@ -60,26 +72,28 @@ namespace NET_MVC_WorkShop2.Controllers
             return Json(result,JsonRequestBehavior.AllowGet);
         }
         /// <summary>
-        /// Book_Class_ID下拉選單
+        /// UpdateDetail修改資訊
         /// </summary>
+        /// <param name="BookId"></param>
         /// <returns></returns>
-        [HttpGet()]
-        public JsonResult GetBook_Class_ID()
+        [HttpPost()]
+        public JsonResult UpdateDetail(string BookId)
         {
             Models.BookService BookService = new Models.BookService();
-            var result = BookService.GetBook_Class_ID();
+            var result = BookService.UpdateDetail(BookId);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+        
 
         /// <summary>
         /// GetBook_Class_Name下拉選單
         /// </summary>
         /// <returns></returns>
         [HttpGet()]
-        public JsonResult GetBook_Class_Name()
+        public JsonResult GetBook_Class()
         {
             Models.BookService BookService = new Models.BookService();
-            var result = BookService.GetBook_Class_Name();
+            var result = BookService.GetBook_Class();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
         /// <summary>

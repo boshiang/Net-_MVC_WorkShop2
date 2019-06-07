@@ -42,7 +42,13 @@ namespace NET_MVC_WorkShop2.Models
         [DisplayName("借閱狀態")]
         public string Book_Status { get; set; }
 
+        [DisplayName("書籍狀態")]
+        public string Book_Status_Name { get; set; }
+
         [DisplayName("借閱人")]
         public string Book_Keeper { get; set; }
+
+        [DisplayName("借閱人")]
+        public string Book_Keeper_EName { get; set; }
     }
 }

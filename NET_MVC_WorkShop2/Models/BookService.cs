@@ -29,18 +29,20 @@ namespace NET_MVC_WorkShop2.Models
             DataTable dt = new DataTable();
             string sql = @"SELECT BOOK_ID, BOOK_CLASS_NAME ,BOOK_NAME ,BOOK_BOUGHT_DATE ,CODE_NAME ,USER_ENAME
                            FROM [dbo].[BOOK_DATA] as da
+
                            left join [dbo].[BOOK_CLASS] as cl
                            on da.BOOK_CLASS_ID = cl.BOOK_CLASS_ID
                            left join [dbo].[BOOK_CODE] as co
                            on da.BOOK_STATUS = co.CODE_ID
                            left join [dbo].[MEMBER_M] as m
                            on da.BOOK_KEEPER = m.USER_ID
+
                            Where (da.BOOK_STATUS = co.CODE_ID) AND
                                  (da.BOOK_ID = @Book_ID OR @Book_ID='') AND
                                  (BOOK_NAME LIKE ('%' + @Book_Name + '%')or @Book_Name='') AND
-                                 (UPPER(BOOK_CLASS_NAME) LIKE UPPER('%' + @Book_Class_Name + '%')or @Book_Class_Name='') AND
-                                 (CODE_NAME LIKE ('%' + @Book_Status + '%')or @Book_Status='') AND
-                                 (USER_ENAME LIKE ('%' + @Book_Keeper + '%')or @Book_Keeper='')";
+                                 (UPPER(da.BOOK_CLASS_ID) LIKE UPPER('%' + @Book_Class_Name + '%')or @Book_Class_Name='') AND
+                                 (BOOK_STATUS LIKE ('%' + @Book_Status + '%')or @Book_Status='') AND
+                                 (BOOK_KEEPER LIKE ('%' + @Book_Keeper + '%')or @Book_Keeper='')";
 
 
             using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
@@ -92,11 +94,40 @@ namespace NET_MVC_WorkShop2.Models
             }
             return BookId;
         }
-
+        /// <summary>
+        /// 修改書籍
+        /// </summary>
+        /// <param name="book"></param>
+        /// <returns>書籍編號</returns>
+        public int UpdateBook(Models.BookData book)
+        {
+            string sql = @" UPDATE [dbo].[BOOK_DATA]
+                            SET BOOK_NAME = @Book_Name, BOOK_AUTHOR = @Book_Author, BOOK_PUBLISHER = @Book_Publisher, BOOK_NOTE = @Book_Note, 
+                                BOOK_BOUGHT_DATE = @Book_BoughtDate, BOOK_CLASS_ID = @Book_Class_ID, BOOK_STATUS = @Book_Status, BOOK_KEEPER = @Book_Keeper
+                            WHERE BOOK_ID = @Book_ID";
+            int BookId;
+            using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.Add(new SqlParameter("@Book_ID", book.Book_ID));
+                cmd.Parameters.Add(new SqlParameter("@Book_Name", book.Book_Name));
+                cmd.Parameters.Add(new SqlParameter("@Book_Author", book.Book_Author));
+                cmd.Parameters.Add(new SqlParameter("@Book_Publisher", book.Book_Publisher));
+                cmd.Parameters.Add(new SqlParameter("@Book_Note", book.Book_Note));
+                cmd.Parameters.Add(new SqlParameter("@Book_BoughtDate", book.Book_BoughtDate));
+                cmd.Parameters.Add(new SqlParameter("@Book_Class_ID", book.Book_Class_ID));
+                cmd.Parameters.Add(new SqlParameter("@Book_Status", book.Book_Status));
+                cmd.Parameters.Add(new SqlParameter("@Book_Keeper", book.Book_Keeper));
+                BookId = (int)(cmd.ExecuteNonQuery());
+                conn.Close();
+            }
+            return BookId;
+        }
         /// <summary>
         /// 刪除書籍
         /// </summary>
-        
+
         public int DeleteBookById(string BookId)
         {
 
@@ -112,45 +143,46 @@ namespace NET_MVC_WorkShop2.Models
             }
             return BookID;
         }
-
+        
         /// <summary>
-        /// Book_Class_ID下拉選單
+        /// 編輯書籍資訊
         /// </summary>
-        /// <returns></returns>
-        public List<Models.BookData> GetBook_Class_ID()
+        public List<Models.BookData> UpdateDetail(string BookId)
         {
             DataTable dt = new DataTable();
-            string sql = @"SELECT Book_Class_ID
-                           FROM [dbo].[BOOK_CLASS] as cl";
+            string sql = @"SELECT BOOK_NAME ,BOOK_AUTHOR , BOOK_PUBLISHER , BOOK_NOTE ,BOOK_BOUGHT_DATE , da.BOOK_CLASS_ID , CODE_ID ,USER_ID
+                           FROM [dbo].[BOOK_DATA] as da
 
+                           left join [dbo].[BOOK_CLASS] as cl
+                           on da.BOOK_CLASS_ID = cl.BOOK_CLASS_ID
+                           left join [dbo].[BOOK_CODE] as co
+                           on da.BOOK_STATUS = co.CODE_ID
+                           left join [dbo].[MEMBER_M] as m
+                           on da.BOOK_KEEPER = m.USER_ID
 
+                           Where (da.BOOK_STATUS = co.CODE_ID) AND
+                                 (da.BOOK_ID = @Book_ID OR @Book_ID='') AND
+                                 Book_ID=@Book_ID";
             using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
             {
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.Add(new SqlParameter("@Book_ID", BookId));
                 SqlDataAdapter sqlAdapter = new SqlDataAdapter(cmd);
                 sqlAdapter.Fill(dt);
                 conn.Close();
             }
-            List<Models.BookData> result = new List<BookData>();
-            foreach (DataRow row in dt.Rows)
-            {
-                result.Add(new BookData()
-                {
-                    Book_Class_ID = row["Book_Class_ID"].ToString()
-                });
-            }
-            return result;
+            return this.MapBookDataToListUpdate(dt);
         }
 
         /// <summary>
-        /// Book_Class_Name下拉選單
+        /// Book_Class下拉選單
         /// </summary>
         /// <returns></returns>
-        public List<Models.BookData> GetBook_Class_Name()
+        public List<Models.BookData> GetBook_Class()
         {
             DataTable dt = new DataTable();
-            string sql = @"SELECT BOOK_CLASS_NAME
+            string sql = @"SELECT *
                            FROM [dbo].[BOOK_CLASS] as cl";
 
 
@@ -167,6 +199,7 @@ namespace NET_MVC_WorkShop2.Models
             {
                 result.Add(new BookData()
                 {
+                    Book_Class_ID = row["Book_Class_ID"].ToString(),
                     Book_Class_Name = row["BOOK_CLASS_NAME"].ToString()
                 });
             }
@@ -179,7 +212,7 @@ namespace NET_MVC_WorkShop2.Models
         public List<Models.BookData> GetBook_Status()
         {
             DataTable dt = new DataTable();
-            string sql = @"SELECT CODE_NAME
+            string sql = @"SELECT *
                            FROM [dbo].[BOOK_CODE] as co";
 
 
@@ -196,7 +229,8 @@ namespace NET_MVC_WorkShop2.Models
             {
                 result.Add(new BookData()
                 {
-                    Book_Status = row["CODE_NAME"].ToString()
+                    Book_Status = row["CODE_ID"].ToString(),
+                    Book_Status_Name = row["CODE_NAME"].ToString()
                 });
             }
             return result;
@@ -208,7 +242,7 @@ namespace NET_MVC_WorkShop2.Models
         public List<Models.BookData> GetBook_Keeper()
         {
             DataTable dt = new DataTable();
-            string sql = @"SELECT USER_ENAME
+            string sql = @"SELECT *
                            FROM [dbo].[MEMBER_M] as m";
 
 
@@ -225,7 +259,8 @@ namespace NET_MVC_WorkShop2.Models
             {
                 result.Add(new BookData()
                 {
-                    Book_Keeper = row["USER_ENAME"].ToString()
+                    Book_Keeper = row["USER_ID"].ToString(),
+                    Book_Keeper_EName = row["USER_ENAME"].ToString()
                 });
             }
             return result;
@@ -250,8 +285,35 @@ namespace NET_MVC_WorkShop2.Models
                     Book_Class_Name = row["BOOK_CLASS_NAME"].ToString(),
                     Book_Name = row["BOOK_NAME"].ToString(),
                     Book_BoughtDate = Convert.ToDateTime(row["BOOK_BOUGHT_DATE"]).ToString("yyyy/MM/dd"),
-                    Book_Status = row["CODE_NAME"].ToString(),
-                    Book_Keeper = row["USER_ENAME"].ToString()
+                    Book_Status_Name = row["CODE_NAME"].ToString(),
+                    Book_Keeper_EName = row["USER_ENAME"].ToString()
+                });
+            }
+            return result;
+        }
+        
+        /// <summary>
+        /// Map資料進Update
+        /// </summary>
+        /// <param name="BookData"></param>
+        /// <returns></returns>
+
+        private List<Models.BookData> MapBookDataToListUpdate(DataTable BookData)
+        {
+            List<Models.BookData> result = new List<BookData>();
+            foreach (DataRow row in BookData.Rows)
+            {
+                result.Add(new BookData()
+                {
+                    
+                    Book_Name = row["BOOK_NAME"].ToString(),
+                    Book_Author = row["BOOK_AUTHOR"].ToString(),
+                    Book_Publisher = row["BOOK_PUBLISHER"].ToString(),
+                    Book_Note = row["BOOK_PUBLISHER"].ToString(),
+                    Book_BoughtDate = Convert.ToDateTime(row["BOOK_BOUGHT_DATE"]).ToString("yyyy/MM/dd"),
+                    Book_Class_ID = row["BOOK_CLASS_ID"].ToString(),
+                    Book_Status = row["CODE_ID"].ToString(),
+                    Book_Keeper = row["USER_ID"].ToString()
                 });
             }
             return result;
