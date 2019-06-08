@@ -42,7 +42,8 @@ namespace NET_MVC_WorkShop2.Models
                                  (BOOK_NAME LIKE ('%' + @Book_Name + '%')or @Book_Name='') AND
                                  (UPPER(da.BOOK_CLASS_ID) LIKE UPPER('%' + @Book_Class_Name + '%')or @Book_Class_Name='') AND
                                  (BOOK_STATUS LIKE ('%' + @Book_Status + '%')or @Book_Status='') AND
-                                 (BOOK_KEEPER LIKE ('%' + @Book_Keeper + '%')or @Book_Keeper='')";
+                                 (BOOK_KEEPER LIKE ('%' + @Book_Keeper + '%')or @Book_Keeper='')
+                                 ORDER BY BOOK_BOUGHT_DATE DESC";
 
 
             using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
@@ -308,7 +309,7 @@ namespace NET_MVC_WorkShop2.Models
                     Book_Name = row["BOOK_NAME"].ToString(),
                     Book_Author = row["BOOK_AUTHOR"].ToString(),
                     Book_Publisher = row["BOOK_PUBLISHER"].ToString(),
-                    Book_Note = row["BOOK_PUBLISHER"].ToString(),
+                    Book_Note = row["BOOK_NOTE"].ToString(),
                     Book_BoughtDate = Convert.ToDateTime(row["BOOK_BOUGHT_DATE"]).ToString("yyyy/MM/dd"),
                     Book_Class_ID = row["BOOK_CLASS_ID"].ToString(),
                     Book_Status = row["CODE_ID"].ToString(),

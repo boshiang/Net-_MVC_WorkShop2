@@ -18,7 +18,6 @@ namespace NET_MVC_WorkShop2.Controllers
         [HttpGet()]
         public ActionResult Index()
         {
-            ViewBag.book = this.codeService.GetBook();
             return View();
         }
 

@@ -96,8 +96,8 @@
                     @Html.TextBoxFor(model => model.Book_Keeper, new { @class = "form-control", id = "keeper_value", name = "Book_Keeper", required = "required", validationmessage = "這是必填欄位", style = "width:70%;padding-right: 3px;" })
                 </li>
                 <li>
-                    <input type="button" value="儲存新增" class="btn btn-primary" id="save_insert" style="display: none;" />
-                    <input type="button" value="儲存編輯" class="btn btn-primary" id="save_update" style="display: none;" />
+                    <input type="button" value="儲存新增" class="btn btn-primary" id="save_insert" style="display: none;"/>
+                    <input type="button" value="儲存編輯" class="btn btn-primary" id="save_update" style="display: none;"/>
                 </li>
 
             </ul>
@@ -106,6 +106,8 @@
     
     <script>
         $(document).ready(function () {
+            KendoDropDownList();
+            var validator = $("#insert_form").kendoValidator().data("kendoValidator");
             //取得書籍資料
             $.ajax({
                 type: "Post",
@@ -135,35 +137,9 @@
                 });
                 return false;
             });
-
-            //儲存新增
-            $('#save_insert').click(function () {
-                $('#status_value').val("A");
-                $('#keeper_value').val(" ");
-                var validator = $("#insert_form").kendoValidator().data("kendoValidator"); 
-                if (validator.validate()) {
-                    $.ajax({
-                        type: "Post",
-                        url: "/BookData/Insert",
-                        data: $('#insert_form').serialize(),
-                        dataType: "json",
-                        success: function (response) {
-                            $("#book_grid").data("kendoGrid")
-                                .dataSource
-                                .add(response);
-                            alert("新增成功");
-                            location.reload();
-                        }, error: function (error) {
-                            alert("系統發生錯誤");
-                        }
-                    });
-                    $("#window").data('kendoWindow').close();
-                    return false;
-                }
-            });
-            
             //新增視窗
             $('#insert').click(function () {
+                $("#save_insert").show();
                 $('#insert_form').trigger("reset");
                 $("#Book_BoughtDate_I").kendoDatePicker({
                     value: new Date(),
@@ -171,7 +147,6 @@
                 });
                 $("#hide1").hide();
                 $("#hide2").hide();
-                $("#save_insert").show();
                 $("#window").kendoWindow({
                     width: "500px",
                     title: "新增書籍",
@@ -186,85 +161,65 @@
                 popup.open();
                 popup.center();
             });
-
-            //日期選擇
-            //$("#Book_BoughtDate_I").kendoDatePicker({
-            //    value: new Date(),
-            //    format: "yyyy/MM/dd"
-            //});
-            //書籍類別選擇
-            $("#Book_Class_Name , #Book_Class_Name_I").kendoDropDownList({
-                dataTextField: "Book_Class_Name",
-                dataValueField: "Book_Class_ID",
-                optionLabel: "請選擇...",
-                dataSource: {
-                    transport: {
-                        read: {
-                            dataType: "json",
-                            url: "/BookData/GetBook_Class",
-                        }
-                    }
-                }
-            });
-
-            //書籍狀態選擇
-            $("#Book_Status, #status_value").kendoDropDownList({
-                dataTextField: "Book_Status_Name",
-                dataValueField: "Book_Status",
-                optionLabel: "請選擇...",
-                dataSource: {
-                    transport: {
-                        read: {
-                            dataType: "json",
-                            url: "/BookData/GetBook_Status",
-                        }
-                    }
-                }
-            });
-
-            //借閱人選擇
-            $("#Book_Keeper , #keeper_value").kendoDropDownList({
-                dataTextField: "Book_Keeper_EName",
-                dataValueField: "Book_Keeper",
-                optionLabel: "請選擇...",
-                dataSource: {
-                    transport: {
-                        read: {
-                            dataType: "json",
-                            url: "/BookData/GetBook_Keeper",
-                        }
-                    }
-                }
-            });
-
-        });
-        //修改
-        $('#save_update').click(function () {
-            if ($('#keeper_value').val() == "") {
+            //儲存新增
+            $('#save_insert').click(function () {
+                $('#status_value').val("A");
                 $('#keeper_value').val(" ");
-            }
-            $.ajax({
-                type: "Post",
-                url: "/BookData/Update",
-                data: $('#insert_form').serialize(),
-                dataType: "json",
-                success: function (response) {
-                    alert("更新成功");
-                    location.reload();
-                }, error: function (error) {
-                    alert("系統發生錯誤");
-                }
+                //var validator = $("#insert_form").kendoValidator().data("kendoValidator"); 
+                //if (validator.validate()) {
+                $.ajax({
+                    type: "Post",
+                    url: "/BookData/Insert",
+                    data: $('#insert_form').serialize(),
+                    dataType: "json",
+                    success: function (response) {
+                        $("#book_grid").data("kendoGrid")
+                            .dataSource
+                            .add(response);
+                        alert("新增成功");
+                        location.reload();
+                    }, error: function (error) {
+                        alert("系統發生錯誤");
+                    }
+                });
+                $("#window").data('kendoWindow').close();
+                //} else {
+                //    console.log(456)
+                //}
             });
-            $("#window").data('kendoWindow').close();
-            return false;
+            
+            //修改
+            $('#save_update').click(function () {
+                if ($('#keeper_value').val() == "") {
+                    $('#keeper_value').val(" ");
+                }
+                $.ajax({
+                    type: "Post",
+                    url: "/BookData/Update",
+                    data: $('#insert_form').serialize(),
+                    dataType: "json",
+                    success: function (response) {
+                        alert("更新成功");
+                        location.reload();
+                    }, error: function (error) {
+                        alert("系統發生錯誤");
+                    }
+                });
+                $("#window").data('kendoWindow').close();
+                return false;
+            });
         });
+        
         //載入修改書籍資料
         function UpdateDetails(e) {
             $("#hide1").show();
             $("#hide2").show();
             $("#save_update").show();
             var dataItem = this.dataItem($(e.target).closest("tr"));
-            console.log(typeof(dataItem.Book_ID));
+            $("#Book_BoughtDate_I").kendoDatePicker({
+                value: new Date(),
+                format: "yyyy/MM/dd"
+            });
             $("#window").kendoWindow({
                 width: "500px",
                 title: "編輯書籍",
@@ -301,9 +256,6 @@
                     
                     var BookKeeper = $("#keeper_value").data("kendoDropDownList");
                     BookKeeper.value(response[0].Book_Keeper);
-                    //if (response[0].Book_Keeper == null) {
-                    //    BookKeeper.value(response[0].Book_Keeper) = " ";
-                    //}
                     
                 }, error: function (error) {
                     alert("系統發生錯誤");
@@ -311,7 +263,97 @@
             });
             return false;
             
-        }
+        };
+        //刪除
+        function DeleteDetails(e) {
+            var r = confirm("確認刪除?");
+            if (r == true) {
+                var dataItem = this.dataItem($(e.target).closest("tr"));
+                $.ajax({
+                    type: "POST",
+                    url: "/BookData/Delete",
+                    data: "BookId=" + dataItem.Book_ID,
+                    dataType: "json",
+                    success: function (response) {
+                        e.preventDefault();
+                        $("#book_grid").data("kendoGrid").dataSource.remove(dataItem);
+                        console.log(response);
+                        alert("刪除成功");
+                    }, error: function (error) {
+                        alert("系統發生錯誤");
+                    }
+                });
+                return false;
+            }
+            else {
+                return false;
+            }
+        };
+        function onChange(e) {
+            console.log($('#status_value').val());
+            var dropdownlist = $("#keeper_value").data("kendoDropDownList");
+            if ($('#status_value').val() == "A" || $('#status_value').val() == "U") {
+                console.log(123);
+                dropdownlist.dataSource.data([]);
+                dropdownlist.text(" ");
+                dropdownlist.value(" ");
+                dropdownlist.readonly();
+            } else {
+                KendoDropDownList();
+                dropdownlist.readonly(false);
+            };
+
+        };
+
+        //下拉式選單初始化
+        function KendoDropDownList() {
+            
+            //書籍類別選擇
+            $("#Book_Class_Name , #Book_Class_Name_I").kendoDropDownList({
+                dataTextField: "Book_Class_Name",
+                dataValueField: "Book_Class_ID",
+                optionLabel: "請選擇...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            url: "/BookData/GetBook_Class",
+                        }
+                    }
+                }
+            });
+
+            //書籍狀態選擇
+            $("#Book_Status, #status_value").kendoDropDownList({
+                dataTextField: "Book_Status_Name",
+                dataValueField: "Book_Status",
+                optionLabel: "請選擇...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            url: "/BookData/GetBook_Status",
+                        }
+                    }
+                },
+                change: onChange
+            });
+
+            //借閱人選擇
+            $("#Book_Keeper , #keeper_value").kendoDropDownList({
+                dataTextField: "Book_Keeper_EName",
+                dataValueField: "Book_Keeper",
+                optionLabel: "請選擇...",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            url: "/BookData/GetBook_Keeper",
+                        }
+                    }
+                }
+            });
+        };
         //Grid
         function GridData(dataSource) {
             $("#book_grid").kendoGrid({
@@ -366,32 +408,6 @@
                         width: 80
                     }]
             });
-        };
-        //刪除
-        function DeleteDetails(e) {
-            var r = confirm("確認刪除?");
-            if (r == true) {
-                var dataItem = this.dataItem($(e.target).closest("tr"));
-                //console.log(typeof(dataItem.Book_ID));
-                $.ajax({
-                    type: "POST",
-                    url: "/BookData/Delete",
-                    data: "BookId=" + dataItem.Book_ID,
-                    dataType: "json",
-                    success: function (response) {
-                        e.preventDefault();
-                        $("#book_grid").data("kendoGrid").dataSource.remove(dataItem);
-                        console.log(response);
-                        alert("刪除成功");
-                    }, error: function (error) {
-                        alert("系統發生錯誤");
-                    }
-                });
-                return false;
-            }
-            else {
-                return false;
-            }
         };
         
 
