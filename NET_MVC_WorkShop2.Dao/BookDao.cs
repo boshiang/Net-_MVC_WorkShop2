@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace NET_MVC_WorkShop2.Models
+namespace NET_MVC_WorkShop2.Dao
 {
-    public class BookService
+    public class BookDao
     {
         /// <summary>
         /// 取得DB連線字串
@@ -15,8 +16,7 @@ namespace NET_MVC_WorkShop2.Models
         /// <returns></returns>
         private string GetDBConnectionString()
         {
-            return
-                System.Configuration.ConfigurationManager.ConnectionStrings["DBConn"].ConnectionString.ToString();
+            return NET_MVC_WorkShop2.Common.ConfigTool.GetDBConnectionString("DBConn");
         }
 
 
@@ -24,7 +24,7 @@ namespace NET_MVC_WorkShop2.Models
         /// 查詢書籍
         /// </summary>
         /// <returns></returns>
-        public List<Models.BookData> GetBookByCondtioin(Models.BookSearchArg arg)
+        public List<NET_MVC_WorkShop2.Model.BookData> GetBookByCondtioin(NET_MVC_WorkShop2.Model.BookSearchArg arg)
         {
             DataTable dt = new DataTable();
             string sql = @"SELECT BOOK_ID, BOOK_CLASS_NAME ,BOOK_NAME ,BOOK_BOUGHT_DATE ,CODE_NAME ,USER_ENAME
@@ -66,7 +66,7 @@ namespace NET_MVC_WorkShop2.Models
         /// </summary>
         /// <param name="book"></param>
         /// <returns>書籍編號</returns>
-        public int InsertBook(Models.BookData book)
+        public int InsertBook(NET_MVC_WorkShop2.Model.BookData book)
         {
             string sql = @" INSERT INTO [dbo].[BOOK_DATA]
                          (
@@ -99,7 +99,7 @@ namespace NET_MVC_WorkShop2.Models
         /// 修改書籍
         /// </summary>
         /// <returns>書籍編號</returns>
-        public int UpdateBook(Models.BookData book)
+        public int UpdateBook(NET_MVC_WorkShop2.Model.BookData book)
         {
             string sql = @" UPDATE [dbo].[BOOK_DATA]
                             SET BOOK_NAME = @Book_Name, BOOK_AUTHOR = @Book_Author, BOOK_PUBLISHER = @Book_Publisher, BOOK_NOTE = @Book_Note, 
@@ -143,11 +143,11 @@ namespace NET_MVC_WorkShop2.Models
             }
             return BookID;
         }
-        
+
         /// <summary>
         /// 編輯書籍資訊
         /// </summary>
-        public List<Models.BookData> UpdateDetail(string BookId)
+        public List<NET_MVC_WorkShop2.Model.BookData> UpdateDetail(string BookId)
         {
             DataTable dt = new DataTable();
             string sql = @"SELECT BOOK_ID , BOOK_NAME ,BOOK_AUTHOR , BOOK_PUBLISHER , BOOK_NOTE ,BOOK_BOUGHT_DATE , da.BOOK_CLASS_ID , CODE_ID ,USER_ID
@@ -179,7 +179,7 @@ namespace NET_MVC_WorkShop2.Models
         /// Book_Class下拉選單
         /// </summary>
         /// <returns></returns>
-        public List<Models.BookData> GetBook_Class()
+        public List<NET_MVC_WorkShop2.Model.BookData> GetBook_Class()
         {
             DataTable dt = new DataTable();
             string sql = @"SELECT *
@@ -194,10 +194,10 @@ namespace NET_MVC_WorkShop2.Models
                 sqlAdapter.Fill(dt);
                 conn.Close();
             }
-            List<Models.BookData> result = new List<BookData>();
+            List< NET_MVC_WorkShop2.Model.BookData> result = new List<NET_MVC_WorkShop2.Model.BookData>();
             foreach (DataRow row in dt.Rows)
             {
-                result.Add(new BookData()
+                result.Add(new NET_MVC_WorkShop2.Model.BookData()
                 {
                     Book_Class_ID = row["Book_Class_ID"].ToString(),
                     Book_Class_Name = row["BOOK_CLASS_NAME"].ToString()
@@ -209,7 +209,7 @@ namespace NET_MVC_WorkShop2.Models
         /// Book_Status下拉選單
         /// </summary>
         /// <returns></returns>
-        public List<Models.BookData> GetBook_Status()
+        public List<NET_MVC_WorkShop2.Model.BookData> GetBook_Status()
         {
             DataTable dt = new DataTable();
             string sql = @"SELECT *
@@ -224,10 +224,10 @@ namespace NET_MVC_WorkShop2.Models
                 sqlAdapter.Fill(dt);
                 conn.Close();
             }
-            List<Models.BookData> result = new List<BookData>();
+            List< NET_MVC_WorkShop2.Model.BookData> result = new List<NET_MVC_WorkShop2.Model.BookData>();
             foreach (DataRow row in dt.Rows)
             {
-                result.Add(new BookData()
+                result.Add(new NET_MVC_WorkShop2.Model.BookData()
                 {
                     Book_Status = row["CODE_ID"].ToString(),
                     Book_Status_Name = row["CODE_NAME"].ToString()
@@ -239,7 +239,7 @@ namespace NET_MVC_WorkShop2.Models
         /// Book_Keeper下拉選單
         /// </summary>
         /// <returns></returns>
-        public List<Models.BookData> GetBook_Keeper()
+        public List<NET_MVC_WorkShop2.Model.BookData> GetBook_Keeper()
         {
             DataTable dt = new DataTable();
             string sql = @"SELECT *
@@ -254,10 +254,10 @@ namespace NET_MVC_WorkShop2.Models
                 sqlAdapter.Fill(dt);
                 conn.Close();
             }
-            List<Models.BookData> result = new List<BookData>();
+            List< NET_MVC_WorkShop2.Model.BookData> result = new List<NET_MVC_WorkShop2.Model.BookData>();
             foreach (DataRow row in dt.Rows)
             {
-                result.Add(new BookData()
+                result.Add(new NET_MVC_WorkShop2.Model.BookData()
                 {
                     Book_Keeper = row["USER_ID"].ToString(),
                     Book_Keeper_EName = row["USER_ENAME"].ToString()
@@ -266,7 +266,7 @@ namespace NET_MVC_WorkShop2.Models
             return result;
         }
 
-        
+
 
         /// <summary>
         /// Map資料進List
@@ -274,12 +274,12 @@ namespace NET_MVC_WorkShop2.Models
         /// <param name="BookData"></param>
         /// <returns></returns>
 
-        private List<Models.BookData> MapBookDataToList(DataTable BookData)
+        private List<NET_MVC_WorkShop2.Model.BookData> MapBookDataToList(DataTable BookData)
         {
-            List<Models.BookData> result = new List<BookData>();
+            List< NET_MVC_WorkShop2.Model.BookData> result = new List<NET_MVC_WorkShop2.Model.BookData>();
             foreach (DataRow row in BookData.Rows)
             {
-                result.Add(new BookData()
+                result.Add(new NET_MVC_WorkShop2.Model.BookData()
                 {
                     Book_ID = row["Book_ID"].ToString(),
                     Book_Class_Name = row["BOOK_CLASS_NAME"].ToString(),
@@ -291,19 +291,19 @@ namespace NET_MVC_WorkShop2.Models
             }
             return result;
         }
-        
+
         /// <summary>
         /// Map資料進Update
         /// </summary>
         /// <param name="BookData"></param>
         /// <returns></returns>
 
-        private List<Models.BookData> MapBookDataToListUpdate(DataTable BookData)
+        private List<NET_MVC_WorkShop2.Model.BookData> MapBookDataToListUpdate(DataTable BookData)
         {
-            List<Models.BookData> result = new List<BookData>();
+            List< NET_MVC_WorkShop2.Model.BookData> result = new List<NET_MVC_WorkShop2.Model.BookData>();
             foreach (DataRow row in BookData.Rows)
             {
-                result.Add(new BookData()
+                result.Add(new NET_MVC_WorkShop2.Model.BookData()
                 {
                     Book_ID = row["BOOK_ID"].ToString(),
                     Book_Name = row["BOOK_NAME"].ToString(),

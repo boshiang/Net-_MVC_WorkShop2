@@ -1,4 +1,4 @@
-﻿@model NET_MVC_WorkShop2.Models.BookData
+﻿@model NET_MVC_WorkShop2.Model.BookData
 
 @{
     ViewBag.Title = "查詢書籍";
@@ -165,8 +165,6 @@
             $('#save_insert').click(function () {
                 $('#status_value').val("A");
                 $('#keeper_value').val(" ");
-                //var validator = $("#insert_form").kendoValidator().data("kendoValidator"); 
-                //if (validator.validate()) {
                 $.ajax({
                     type: "Post",
                     url: "/BookData/Insert",
@@ -183,9 +181,6 @@
                     }
                 });
                 $("#window").data('kendoWindow').close();
-                //} else {
-                //    console.log(456)
-                //}
             });
             
             //修改
@@ -293,7 +288,6 @@
             console.log($('#status_value').val());
             var dropdownlist = $("#keeper_value").data("kendoDropDownList");
             if ($('#status_value').val() == "A" || $('#status_value').val() == "U") {
-                console.log(123);
                 dropdownlist.dataSource.data([]);
                 dropdownlist.text(" ");
                 dropdownlist.value(" ");

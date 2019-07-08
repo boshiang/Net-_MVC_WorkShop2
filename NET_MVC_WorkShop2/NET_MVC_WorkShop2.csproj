@@ -559,10 +559,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\BookData.cs" />
-    <Compile Include="Models\BookSearch.cs" />
-    <Compile Include="Models\BookService.cs" />
-    <Compile Include="Models\CodeService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -652,6 +648,21 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NET_MVC_WorkShop2.Common\NET_MVC_WorkShop2.Common.csproj">
+      <Project>{6f9ed83b-51f6-44e9-85af-1c390247161a}</Project>
+      <Name>NET_MVC_WorkShop2.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NET_MVC_WorkShop2.Models\NET_MVC_WorkShop2.Model.csproj">
+      <Project>{8caba9c7-9fc8-45df-87e6-6692dedd01f7}</Project>
+      <Name>NET_MVC_WorkShop2.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NET_MVC_WorkShop2.Service\NET_MVC_WorkShop2.Service.csproj">
+      <Project>{d56d0936-76ce-4e6d-95cc-97a740e24c48}</Project>
+      <Name>NET_MVC_WorkShop2.Service</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

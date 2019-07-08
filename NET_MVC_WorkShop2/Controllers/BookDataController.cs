@@ -11,9 +11,6 @@ namespace NET_MVC_WorkShop2.Controllers
 {
     public class BookDataController : Controller
     {
-        Models.CodeService codeService = new Models.CodeService();
-        //Models.BookData BookData = new Models.BookData();
-
         // GET: BookData
         [HttpGet()]
         public ActionResult Index()
@@ -26,9 +23,9 @@ namespace NET_MVC_WorkShop2.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost()]
-        public JsonResult Insert(Models.BookData book)
+        public JsonResult Insert(NET_MVC_WorkShop2.Model.BookData book)
         {
-            Models.BookService BookService = new Models.BookService();
+            NET_MVC_WorkShop2.Service.BookService BookService = new NET_MVC_WorkShop2.Service.BookService();
             var result = BookService.InsertBook(book);
             TempData["message"] = "存檔成功";
             return Json(result, JsonRequestBehavior.AllowGet);
@@ -39,9 +36,9 @@ namespace NET_MVC_WorkShop2.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost()]
-        public JsonResult Update(Models.BookData book)
+        public JsonResult Update(NET_MVC_WorkShop2.Model.BookData book)
         {
-            Models.BookService BookService = new Models.BookService();
+            NET_MVC_WorkShop2.Service.BookService BookService = new NET_MVC_WorkShop2.Service.BookService();
             var result = BookService.UpdateBook(book);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -54,7 +51,7 @@ namespace NET_MVC_WorkShop2.Controllers
         [HttpPost()]
         public JsonResult Delete(string BookId)
         {
-            Models.BookService BookService = new Models.BookService();
+            NET_MVC_WorkShop2.Service.BookService BookService = new NET_MVC_WorkShop2.Service.BookService();
             var result = BookService.DeleteBookById(BookId);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -64,9 +61,9 @@ namespace NET_MVC_WorkShop2.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost()]
-        public JsonResult Search(Models.BookSearch arg)
+        public JsonResult Search(NET_MVC_WorkShop2.Model.BookSearchArg arg)
         {
-            Models.BookService BookService = new Models.BookService();
+            NET_MVC_WorkShop2.Service.BookService BookService = new NET_MVC_WorkShop2.Service.BookService();
             var result = BookService.GetBookByCondtioin(arg);
             return Json(result,JsonRequestBehavior.AllowGet);
         }
@@ -78,7 +75,7 @@ namespace NET_MVC_WorkShop2.Controllers
         [HttpPost()]
         public JsonResult UpdateDetail(string BookId)
         {
-            Models.BookService BookService = new Models.BookService();
+            NET_MVC_WorkShop2.Service.BookService BookService = new NET_MVC_WorkShop2.Service.BookService();
             var result = BookService.UpdateDetail(BookId);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -91,7 +88,7 @@ namespace NET_MVC_WorkShop2.Controllers
         [HttpGet()]
         public JsonResult GetBook_Class()
         {
-            Models.BookService BookService = new Models.BookService();
+            NET_MVC_WorkShop2.Service.BookService BookService = new NET_MVC_WorkShop2.Service.BookService();
             var result = BookService.GetBook_Class();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -102,7 +99,7 @@ namespace NET_MVC_WorkShop2.Controllers
         [HttpGet()]
         public JsonResult GetBook_Status()
         {
-            Models.BookService BookService = new Models.BookService();
+            NET_MVC_WorkShop2.Service.BookService BookService = new NET_MVC_WorkShop2.Service.BookService();
             var result = BookService.GetBook_Status();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -113,7 +110,7 @@ namespace NET_MVC_WorkShop2.Controllers
         [HttpGet()]
         public JsonResult GetBook_Keeper()
         {
-            Models.BookService BookService = new Models.BookService();
+            NET_MVC_WorkShop2.Service.BookService BookService = new NET_MVC_WorkShop2.Service.BookService();
             var result = BookService.GetBook_Keeper();
             return Json(result, JsonRequestBehavior.AllowGet);
         }

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace NET_MVC_WorkShop2.Models
+namespace NET_MVC_WorkShop2.Model
 {
-    public class BookSearch
+    public class BookSearchArg
     {
         public string Book_ID { get; set; }
         [DisplayName("書名")]
